@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+UI menu.c32
+prompt 0 
+timeout 50
+ontimeout {{ kickstart_default }}
+menu title Node Install Kickstart
+
+LABEL inst6
+    MENU LABEL ^1) Install 6
+    KERNEL pxeboot/6/vmlinuz
+    APPEND initrd=pxeboot/6/initrd.img kssendmac ksdevice=eth0 ks={{ kickstart_server }}/ks/local6.ks noipv6 ramdisk_size=10240
+
+LABEL inst7
+    MENU LABEL ^2) Install 7
+    KERNEL pxeboot/7/vmlinuz
+    APPEND initrd=pxeboot/7/initrd.img kssendmac ksdevice=enp3s0 hpsa.hpsa_allow_any=1 ks={{ kickstart_server }}/ks/local7.ks noipv6 ramdisk_size=10240
+
+LABEL rescue
+    MENU LABEL ^3) 6 Rescue Boot
+    KERNEL pxeboot/6/vmlinuz
+    APPEND initrd=pxeboot/6/initrd.img rescue
+

@@ -1,0 +1,59 @@
+---
+- name: Check the OS we're running against
+  assert:
+    that: "ansible_os_family == 'RedHat'"
+    fail_msg: "Role is only intended to run against Red Hat EL type OS's"
+    success_msg: "OS is Red Hat EL family"
+
+- name: Ensure packages are installed
+  yum:
+    name: "{{ kickstart_pkgs }}"
+    state: present
+
+- name: Ensure required PXE dirs exist
+  file:
+    path: "{{ kickstart_tftpdir }}/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+    - pxeboot
+    - pxelinux.cfg
+
+- name: Ensure PXE boot README is present in pxelinux.cfg
+  copy:
+    src: pxe_readme
+    dest: "{{ kickstart_tftpdir }}/pxelinux.cfg/00README"
+    owner: root
+    group: root
+    mode: 0444
+
+- name: Ensure ks directory exists for kickstart files
+  file:
+    state: directory
+    path: "/var/www/html/ks"
+
+- name: Ensure templated files in place
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+#   - { src: pxe_default.j2, dest: "{{ kickstart_tftpdir }}/pxelinux.cfg/default" }
+    - { src: pxe_install.j2, dest: "{{ kickstart_tftpdir }}/pxelinux.cfg/install" }
+    - { src: local6.ks.j2, dest: "/var/www/html/ks/local6.ks" }
+    - { src: local7.ks.j2, dest: "/var/www/html/ks/local7.ks" }
+
+- name: Ensure services running
+  service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - tftp
+    - httpd
+
+# tasks file for kickstart

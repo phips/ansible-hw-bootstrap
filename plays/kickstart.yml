@@ -1,0 +1,7 @@
+---
+- hosts: kickstart
+  become: true
+  roles:
+    - { role: shell,     tags: sh }
+    - { role: firewall,  tags: fw }
+    - { role: kickstart, tags: ks }

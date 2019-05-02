@@ -1,0 +1,11 @@
+---
+# defaults file for kickstart
+
+kickstart_pkgs: 
+  - tftp-server
+  - syslinux-tftpboot
+  - createrepo
+  - httpd
+kickstart_tftpdir: /var/lib/tftpboot
+# you'll need to set this
+# kickstart_server: set_this_variable_in_role_defaults_or_groupvars

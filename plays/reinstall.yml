@@ -1,0 +1,32 @@
+---
+- hosts: kickstart
+  gather_facts: no
+  vars:
+    reboot: False
+
+  tasks:
+    - name: Gather
+      setup:
+        filter: ansible_default_ipv4
+      register: output
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      loop: "{{ groups['reinstall'] }}"
+
+    - name: Set PXE menu to install
+      file:
+        state: link
+        src: install
+        dest: "/var/lib/tftpboot/pxelinux.cfg/01-{{ hostvars[item]['ansible_default_ipv4']['macaddress'] | regex_replace(':','-') }}"
+      become: true
+      loop: "{{ groups['reinstall'] }}"
+
+    - name: Reboot target host for PXE boot
+      hpilo_boot:
+        host: "{{ hostvars[item]['ilo_ip'] }}"
+        media: network
+        password: "{{ hostvars[item]['ilo_password'] }}"
+        force: true
+      loop: "{{ groups['reinstall'] }}"
+      delegate_to: localhost
+      when: reboot

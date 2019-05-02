@@ -1,0 +1,11 @@
+If you want to install a host, then create a symlink in this directory to the
+'install' file with the link being a dash separated version of the host's MAC
+address, with 01- prepended. Lowercase any letters. For example:
+
+[pxelinux.cfg]$ l
+lrwxrwxrwx. 1 root root    7 Jun 29 16:53 01-00-25-90-22-e5-44 -> install
+-rw-r--r--. 1 root root  287 Jun 29 13:16 default
+-rw-r--r--. 1 root root  433 Jun 29 13:16 install
+
+So the host with MAC 00:25:90:22:e5:44 would be served the 'install' menu
+on its next network boot.

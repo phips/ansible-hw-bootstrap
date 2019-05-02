@@ -1,0 +1,17 @@
+---
+# tasks file for firewall
+
+- name: Check the OS we're running against
+  assert:
+    that: "ansible_os_family == 'RedHat'"
+    fail_msg: "Role is only intended to run against Red Hat EL type OS's"
+    success_msg: "OS is Red Hat EL family"
+
+- name: Get default zone
+  command: firewall-cmd --get-default-zone
+  register: output
+  changed_when: false
+
+- name: Set default zone
+  command: firewall-cmd --set-default-zone {{ firewall_default_zone }}
+  when: firewall_default_zone not in output.stdout
