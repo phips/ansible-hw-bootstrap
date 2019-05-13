@@ -1,0 +1,29 @@
+---
+- hosts: kickstart
+  gather_facts: no
+  vars:
+    reboot: False
+
+  tasks:
+    - name: Host inventory entry has a MAC address
+      assert:
+        that: hostvars[item]['mac'] is defined
+      loop: "{{ groups['initialise'] }}"
+
+    - name: Set PXE menu to install
+      file:
+        state: link
+        src: install
+        dest: "/var/lib/tftpboot/pxelinux.cfg/01-{{ hostvars[item]['mac'] | lower | regex_replace(':','-') }}"
+      become: true
+      loop: "{{ groups['initialise'] }}"
+
+    - name: Reboot target host for PXE boot
+      hpilo_boot:
+        host: "{{ hostvars[item]['ilo_ip'] }}"
+        media: network
+        password: "{{ hostvars[item]['ilo_password'] }}"
+        force: true
+      loop: "{{ groups['initialise'] }}"
+      delegate_to: localhost
+      when: reboot
