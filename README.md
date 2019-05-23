@@ -1,6 +1,6 @@
 # Provisioning hardware with Ansible demo
 
-This will be a blog, soon. Link updated when pertinent.
+This accompanies [a blog post on Opensource.com](https://opensource.com/article/19/5/hardware-bootstrapping-ansible)
 
 # Long story, short
 
